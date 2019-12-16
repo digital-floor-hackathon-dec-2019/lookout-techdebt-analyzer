@@ -5,7 +5,7 @@ RUN apt-get update && \
 COPY requirements.txt /
 RUN pip install --no-cache-dir -r /requirements.txt
 
-ADD ./sonarcheck_analyzer.py /bin/sonarcheck_analyzer.py
+ADD ./techdebt_analyzer.py /bin/techdebt_analyzer.py
 
 ENTRYPOINT ["/usr/bin/dumb-init", "--"]
-CMD ["python3", "/bin/sonarcheck_analyzer.py"]
+CMD ["python3", "/bin/techdebt_analyzer.py"]
