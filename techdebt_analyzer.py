@@ -102,22 +102,8 @@ def serve():
         server.stop(0)
 
 
-def print_check_stats():
-    num_checks = 0
-    all_checks = collections.defaultdict(list)
-    for lang in langs:
-        checks = list_checks(lang)
-        all_checks[lang].append(checks)
-        num_checks += len(checks)
-    logger.info("%d langs, %d checks supported", len(langs), num_checks)
-
-    logger.debug("Langs: %s", langs)
-    logger.debug("Checks: %s", checks)
-
-
 def main():
     logger.info("starting gRPC Analyzer server at port %s", port_to_listen)
-    print_check_stats()
     serve()
 
 
