@@ -20,11 +20,11 @@ from bblfsh_sonar_checks.utils import list_langs
 from bblfsh import filter as filter_uast
 
 version = "alpha"
-host_to_bind = os.getenv('SONARCHECK_HOST', "0.0.0.0")
-port_to_listen = os.getenv('SONARCHECK_PORT', 9930)
+host_to_bind = os.getenv('TECHDEBT_HOST', "0.0.0.0")
+port_to_listen = os.getenv('TECHDEBT_PORT', 9928)
 data_srv_addr = to_grpc_address(
-    os.getenv('SONARCHECK_DATA_SERVICE_URL', "ipv4://localhost:10301"))
-log_level = os.getenv('SONARCHECK_LOG_LEVEL', "info").upper()
+    os.getenv('TECHDEBT_DATA_SERVICE_URL', "ipv4://localhost:10301"))
+log_level = os.getenv('TECHDEBT_LOG_LEVEL', "info").upper()
 
 logger = logging.getLogger(__name__)
 handler = logging.StreamHandler()
@@ -68,28 +68,14 @@ class Analyzer(pb.AnalyzerServicer):
                 logger.debug("analyzing '%s' in %s",
                              change.head.path, change.head.language)
                 try:
-                    check_results = run_checks(
-                        list_checks(change.head.language.lower()),
-                        change.head.language.lower(),
-                        change.head.uast
-                    )
+                    comments.append(
+                        pb.Comment(
+                            file=change.head.path,
+                            line=0,
+                            text="Hello from techdebt analyzer"))
                 except Exception as e:
-                    logger.exception("Error during analyzing file '%s' in commit '%s': %s",
-                                     change.head.path, request.commit_revision.head.hash, e)
+                    logger.exception("Error occurred while creating a comment: %s", e)
                     continue
-
-                logger.debug("check_results %s", check_results)
-                for check in check_results:
-                    for res in check_results[check]:
-                        try:
-                            comments.append(
-                                pb.Comment(
-                                    file=change.head.path,
-                                    line=(res.get("pos", {}) or {}).get("line", 0),
-                                    text="{}: {}".format(check, res["msg"])))
-                        except Exception as e:
-                            logger.exception("Error occurred while creating a comment: %s", e)
-                            continue
 
         logger.info("%d comments produced", len(comments))
 
