@@ -65,17 +65,22 @@ class Analyzer(pb.AnalyzerServicer):
                 if not change.HasField("head"):
                     continue
 
-                logger.debug("analyzing '%s' in %s",
-                             change.head.path, change.head.language)
-                try:
-                    comments.append(
-                        pb.Comment(
-                            file=change.head.path,
-                            line=0,
-                            text="Hello from techdebt analyzer"))
-                except Exception as e:
-                    logger.exception("Error occurred while creating a comment: %s", e)
-                    continue
+                if change.head.path.endswith("/Environment.java"):
+                    try:
+                        comments.append(
+                            pb.Comment(
+                                file=change.head.path,
+                                line=0,
+                                text=""" This source file is a frequently changed file with significant technical debt.
+
+                                         Leave the campground cleaner than you found it! Improvement estimate: starting at 5 mins. """),
+                                confidence=94)
+                        logger.debug("commented on non-hotspot file: %s", change.head.path)
+                    except Exception as e:
+                        logger.exception("Error occurred while creating a comment: %s", e)
+                        continue
+                else:
+                  logger.debug("skipping non-hotspot file: %s", change.head.path)
 
         logger.info("%d comments produced", len(comments))
 
