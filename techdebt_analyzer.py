@@ -71,9 +71,7 @@ class Analyzer(pb.AnalyzerServicer):
                             pb.Comment(
                                 file=change.head.path,
                                 line=0,
-                                text=""" This source file is a frequently changed file with significant technical debt.
-
-                                         Leave the campground cleaner than you found it! Improvement estimate: starting at 5 mins. """,
+                                text="This source file is a frequently changed file with significant technical debt.\n\nLeave the campground cleaner than you found it! Improvement estimate: starting at 5 mins.",
                                 confidence=94))
                         logger.debug("commented on non-hotspot file: %s", change.head.path)
                     except Exception as e:
